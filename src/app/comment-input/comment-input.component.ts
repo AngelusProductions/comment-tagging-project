@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { UsersService } from '../users.service'
 import { User } from '../interfaces/user.interface';
 
@@ -17,10 +17,12 @@ export class CommentInputComponent implements OnInit {
   ngOnInit(): void {
     this.users = this.usersService.getUsers();
   }
+    
+  @Output() commentAdded = new EventEmitter<string>();
 
   addComment() {
     if (!this.newComment.trim()) return;
-    console.log(this.newComment); // Replace this with actual logic to add the comment
-    this.newComment = ''; // Reset the input field after adding the comment
+    this.commentAdded.emit(this.newComment);
+    this.newComment = '';
   }
 }

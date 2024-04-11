@@ -12,7 +12,7 @@ export class CommentsService {
 
   constructor() { }
 
-  getComments() {
+  getComments(): Comment[] {
     return this.comments;
   }
 }

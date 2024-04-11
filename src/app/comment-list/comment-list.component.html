@@ -4,5 +4,5 @@
             {{ comment.text }} - <em>{{ comment.author }}</em>
         </li>
     </ul>
-    <comment-input (submit)="onSubmit($event)"></comment-input>
+    <comment-input (commentAdded)="onCommentAdded($event)"></comment-input>
 </div>
