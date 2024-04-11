@@ -1,0 +1,4 @@
+<div class="comment-form">
+    <input type="text" [(ngModel)]="newComment" (keyup.enter)="addComment()" placeholder="Type a comment..." />
+    <button (click)="addComment()">Add Comment</button>
+</div>

@@ -1,0 +1,8 @@
+<div id="comment-list-container">
+    <ul class="comment-list">
+        <li *ngFor="let comment of comments" class="comment-item">
+            {{ comment.text }} - <em>{{ comment.author }}</em>
+        </li>
+    </ul>
+    <comment-input (submit)="onSubmit($event)"></comment-input>
+</div>
