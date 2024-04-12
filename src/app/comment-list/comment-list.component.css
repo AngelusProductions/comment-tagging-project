@@ -1,12 +1,8 @@
-.comment-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+#comment-list-container h1 {
+  font-size: medium;
 }
 
-.comment-item {
-    background-color: #f3f3f3;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 5px;
+#comment-list {
+  margin: 0;
+  padding: 0;
 }

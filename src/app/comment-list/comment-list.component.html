@@ -1,8 +1,26 @@
 <div id="comment-list-container">
-    <ul class="comment-list">
-        <li *ngFor="let comment of comments" class="comment-item">
-            {{ comment.text }} - <em>{{ comment.author }}</em>
-        </li>
+    <h1>Comments: </h1>
+
+    <ul id="comment-list">
+        <comment-item *ngFor="let comment of comments" [comment]="comment"></comment-item>
     </ul>
-    <comment-input (commentAdded)="onCommentAdded($event)"></comment-input>
+
+    <comment-form 
+        *ngIf="showCommentForm" 
+        (commentAdded)="onCommentAdded($event)"
+        (formEscaped)="this.showCommentForm = false"
+    />
+    
+    <button (click)="showCommentForm = !showCommentForm">
+        <div *ngIf="!showCommentForm">
+            <fa-icon [icon]="faComment"></fa-icon>
+            /
+            <fa-icon [icon]="faCamera"></fa-icon>
+            Add Comment
+        </div>
+        <div *ngIf="showCommentForm">
+            <fa-icon [icon]="faTimes"></fa-icon>
+            Cancel
+        </div>
+    </button>
 </div>

@@ -1,5 +1,14 @@
 export default [
-    { commentID: 1, text: 'This is an example comment.', author: 'Kevin' },
-    { commentID: 2, text: 'This is another example comment.', author: 'Jeff' },
-    { commentID: 3, text: 'This is a third example comment.', author: 'Bryan' },
+  {
+    commentID: 1,
+    text: 'This Task was assigned to Daryl Babb',
+    author: 'System',
+    timestamp: new Date('2020-04-03T11:00:00'),
+  },
+  {
+    commentID: 2,
+    text: 'Waiting on Parts',
+    author: 'System',
+    timestamp: new Date('2020-04-03T11:00:00'),
+  },
 ];

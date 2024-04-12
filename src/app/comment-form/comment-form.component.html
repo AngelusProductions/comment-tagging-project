@@ -1,0 +1,25 @@
+<div class="comment-form">
+    <input 
+        #commentInput 
+        type="text"
+        (keyup)="onKeyUp($event)" 
+        [(ngModel)]="currentInput"
+        placeholder="Add a comment..."
+    />
+    <ul 
+        *ngIf="showUserList" 
+        class="user-list-dropdown"
+        [style.left]="dropdownPositionLeft + 'px'"
+    >
+        <li 
+            *ngFor="let user of filteredUsers" 
+            (click)="selectUser(user)"
+        >
+            {{ user.name }}
+        </li>
+    </ul>
+    <button (click)="addComment()">
+        <fa-icon [icon]="faPlusCircle"></fa-icon>
+        Add
+    </button>
+</div>

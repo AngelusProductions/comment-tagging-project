@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { faCameraAlt } from '@fortawesome/free-solid-svg-icons';
+import { faComment, faTimesRectangle } from '@fortawesome/free-regular-svg-icons';
+
 import { CommentsService } from '../comments.service';
 import { Comment } from '../interfaces/comment.interface';
 
@@ -8,7 +11,12 @@ import { Comment } from '../interfaces/comment.interface';
   styleUrls: ['./comment-list.component.css']
 })
 export class CommentListComponent implements OnInit {
+  showCommentForm = false;
   comments: Comment[] = [];
+
+  faComment = faComment;
+  faCamera = faCameraAlt;
+  faTimes = faTimesRectangle;
 
   constructor(private commentsService: CommentsService) { }
 
@@ -17,10 +25,12 @@ export class CommentListComponent implements OnInit {
   }
 
   onCommentAdded(comment: string) {
+    this.showCommentForm = false;
     this.comments.push({
       commentID: this.comments.length + 1,
       text: comment,
-      author: 'User'
+      author: 'System',
+      timestamp: new Date(),
     })
   }
 }

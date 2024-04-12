@@ -1,0 +1,12 @@
+.comment-item {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: solid #f3f3f3;
+}
+
+.comment-icon {
+    margin-right: 10px;
+}

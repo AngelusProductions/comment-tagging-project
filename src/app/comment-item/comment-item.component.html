@@ -1,0 +1,12 @@
+<li class="comment-item">
+    <div class="comment-item-left">
+        <fa-icon class="comment-icon" [icon]="faComment"></fa-icon>
+        {{ comment.text }}
+    </div>
+    <div class="comment-item-right">
+        {{ comment.author }} 
+        - 
+        {{ comment.timestamp | date: 'yyyy/MM/dd' }} 
+        {{ comment.timestamp | date: 'shortTime' }}
+    </div>
+</li>
