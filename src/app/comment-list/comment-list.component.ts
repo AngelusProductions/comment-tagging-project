@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faCameraAlt } from '@fortawesome/free-solid-svg-icons';
 import { faComment, faTimesRectangle } from '@fortawesome/free-regular-svg-icons';
 
-import { CommentsService } from '../comments.service';
+import { CommentsService } from '../services/comments.service';
 import { Comment } from '../interfaces/comment.interface';
 
 @Component({

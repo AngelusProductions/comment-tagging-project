@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild, EventEmitter, Output } from '@angular/core';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { UsersService } from '../users.service';
+import { UsersService } from '../services/users.service';
 import { User } from '../interfaces/user.interface';
 
 @Component({
