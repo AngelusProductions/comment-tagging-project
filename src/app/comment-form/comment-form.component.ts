@@ -20,7 +20,6 @@ export class CommentFormComponent {
   filteredUsers: User[] = [];
   currentInput = '';
   showUserList = false;
-  dropdownPositionLeft = 0;
   lastCursorIndex = 0;
 
   faPlusCircle = faPlusCircle;
@@ -46,7 +45,6 @@ export class CommentFormComponent {
       if (!this.showUserList) {
         this.filteredUsers = this.users;
         this.showUserList = true;
-        this.calculateDropdownPositionLeft(cursorPosition);
       }
     } else if (event.key === 'Enter') {
       this.addComment();
@@ -67,21 +65,6 @@ export class CommentFormComponent {
         this.showUserList = false;
       }
     }
-  }
-
-  calculateDropdownPositionLeft(cursorPosition: number): number {
-    const commentInputRect =
-      this.commentInput.nativeElement.getBoundingClientRect();
-    const commmentInputSelectionStart =
-      this.commentInput.nativeElement.selectionStart;
-
-    const commentInputWidth = commentInputRect.width;
-    // debugger
-
-    const dropdownPositionLeft =
-      commentInputRect.left + commmentInputSelectionStart * 7 + 5;
-
-    return dropdownPositionLeft;
   }
 
   selectUser(user: User): void {
@@ -111,7 +94,7 @@ export class CommentFormComponent {
       }, 0);
     }
   }
-
+  
   addComment() {
     // Don't add empty comments
     if (!this.currentInput.trim()) return;

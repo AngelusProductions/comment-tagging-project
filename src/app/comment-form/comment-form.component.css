@@ -1,22 +1,27 @@
-.comment-form {
+#comment-form {
   display: flex;
   margin: 10px 0;
   position: relative;
 }
 
-.comment-form input {
+#comment-input {
   flex-grow: 1;
   margin-right: 10px;
   padding: 10px;
   border: solid lightgrey;
   border-radius: 5px;
+  height: 15px;
 }
 
-.comment-form input:focus-visible {
+#comment-input:focus-visible {
   outline: 1px solid grey;
 }
 
-.user-list-dropdown {
+#add-comment-button {
+  width: 90px;
+}
+
+#user-list-dropdown {
   position: absolute;
   border: 1px solid lightgrey;
   background: white;
@@ -24,20 +29,20 @@
   padding: 0;
   margin: 0;
   z-index: 1000;
-  top: 25px;
-  border-radius: 5px;
-  box-shadow: 0px 6px 10px -3px grey;
+  bottom: 38px;
+  box-shadow: 0px -6px 15px -4px grey;
+  width: calc(100% - 90px - 10px);
 }
 
-.user-list-dropdown ul {
+#user-list-dropdown ul {
   padding: 0;
 }
 
-.user-list-dropdown li {
+#user-list-dropdown li {
   padding: 5px 10px;
   cursor: pointer;
 }
 
-.user-list-dropdown li:hover {
+#user-list-dropdown li:hover {
   background-color: #f0f0f0;
 }
