@@ -19,7 +19,6 @@ export class CommentFormComponent {
   users: User[] = [];
   filteredUsers: User[] = [];
   currentInput = '';
-  previousInput = '';
   showUserList = false;
   dropdownPositionLeft = 0;
   lastCursorIndex = 0;
@@ -45,6 +44,7 @@ export class CommentFormComponent {
     if (event.key === '@') {
       // Explicitly check if another list is already shown
       if (!this.showUserList) {
+        this.filteredUsers = this.users;
         this.showUserList = true;
         this.calculateDropdownPositionLeft(cursorPosition);
       }
@@ -67,15 +67,7 @@ export class CommentFormComponent {
         this.showUserList = false;
       }
     }
-
-    this.previousInput = value;
   }
-
-  updateFilteredUsers(
-    value: string,
-    indexOfAtSign: number,
-    cursorPosition: number
-  ) {}
 
   calculateDropdownPositionLeft(cursorPosition: number): number {
     const commentInputRect =
@@ -94,22 +86,19 @@ export class CommentFormComponent {
 
   selectUser(user: User): void {
     alert(user.name);
+    const value = this.currentInput;
     const inputElement = this.commentInput.nativeElement;
     const cursorPosition = inputElement.selectionStart;
-    const value = this.currentInput;
 
     // Find the position of the last '@' before the cursor
     const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
 
     if (indexOfAtSign !== -1) {
       // Replace from '@' to the current cursor position with '@username '
-      this.currentInput = `${value.slice(0, indexOfAtSign)}@${
-        user.name
-      }${value.slice(cursorPosition)}`;
+      this.currentInput = `${value.slice(0, indexOfAtSign)}@${user.name}${value.slice(cursorPosition)}`;
 
       // Update view model
       this.filteredUsers = this.users;
-      this.previousInput = this.currentInput;
       this.showUserList = false;
 
       // Focus the input
@@ -124,8 +113,10 @@ export class CommentFormComponent {
   }
 
   addComment() {
+    // Don't add empty comments
     if (!this.currentInput.trim()) return;
+
+    // Emit the comment to the parent component
     this.commentAdded.emit(this.currentInput);
-    this.currentInput = '';
   }
 }
