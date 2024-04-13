@@ -6,13 +6,14 @@
     (keyup)="onKeyUp($event)"
     [(ngModel)]="currentInput"
     placeholder="Add a comment..."
+    [@slideInOut]
   />
-  <ul *ngIf="showUserList" id="user-list-dropdown">
+  <ul [@dropdownAnimation]="showUserList ? 'open' : 'closed'" id="user-list-dropdown">
     <li *ngFor="let user of filteredUsers" (click)="selectUser(user)">
       {{ user.name }}
     </li>
   </ul>
-  <button id="add-comment-button" (click)="addComment()">
+  <button id="add-comment-button" (click)="addComment()" [@fadeIn]>
     <fa-icon [icon]="faPlusCircle"></fa-icon>
     Add
   </button>

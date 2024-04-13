@@ -7,16 +7,18 @@ import {
 } from '@angular/core';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { UsersService } from '../services/users.service';
 import { User } from '../interfaces/user.interface';
+import { UsersService } from '../services/users.service';
+import { dropdownAnimation, fadeInAnimation, slideInOutAnimation } from '../animations';
 
 @Component({
   selector: 'comment-form',
   templateUrl: './comment-form.component.html',
   styleUrls: ['./comment-form.component.css'],
+  animations: [dropdownAnimation, slideInOutAnimation, fadeInAnimation] 
 })
 export class CommentFormComponent {
-  users: User[] = [];
+  allUsers: User[] = [];
   filteredUsers: User[] = [];
   currentInput = '';
   showUserList = false;
@@ -27,8 +29,8 @@ export class CommentFormComponent {
   constructor(private usersService: UsersService) {}
 
   ngOnInit(): void {
-    this.users = this.usersService.getUsers();
-    this.filteredUsers = this.users;
+    this.allUsers = this.usersService.getUsers();
+    this.filteredUsers = this.allUsers;
   }
 
   @Output() formEscaped = new EventEmitter();
@@ -43,7 +45,7 @@ export class CommentFormComponent {
     if (event.key === '@') {
       // Explicitly check if another list is already shown
       if (!this.showUserList) {
-        this.filteredUsers = this.users;
+        this.filteredUsers = this.allUsers;
         this.showUserList = true;
       }
     } else if (event.key === 'Enter') {
@@ -58,7 +60,7 @@ export class CommentFormComponent {
         const searchTerm = value
           .substring(indexOfAtSign + 1, cursorPosition)
           .toLowerCase();
-        this.filteredUsers = this.users.filter((user) =>
+        this.filteredUsers = this.allUsers.filter((user) =>
           user.name.toLowerCase().includes(searchTerm)
         );
       } else {
@@ -81,7 +83,7 @@ export class CommentFormComponent {
       this.currentInput = `${value.slice(0, indexOfAtSign)}@${user.name}${value.slice(cursorPosition)}`;
 
       // Update view model
-      this.filteredUsers = this.users;
+      this.filteredUsers = this.allUsers;
       this.showUserList = false;
 
       // Focus the input
@@ -94,7 +96,7 @@ export class CommentFormComponent {
       }, 0);
     }
   }
-  
+
   addComment() {
     // Don't add empty comments
     if (!this.currentInput.trim()) return;
