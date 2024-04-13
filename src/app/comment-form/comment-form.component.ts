@@ -1,4 +1,10 @@
-import { Component, ElementRef, ViewChild, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { UsersService } from '../services/users.service';
@@ -16,71 +22,105 @@ export class CommentFormComponent {
   previousInput = '';
   showUserList = false;
   dropdownPositionLeft = 0;
+  lastCursorIndex = 0;
 
   faPlusCircle = faPlusCircle;
 
-  constructor(private usersService: UsersService) { }
+  constructor(private usersService: UsersService) {}
 
   ngOnInit(): void {
     this.users = this.usersService.getUsers();
     this.filteredUsers = this.users;
   }
-    
+
   @Output() formEscaped = new EventEmitter();
   @Output() commentAdded = new EventEmitter<string>();
 
   @ViewChild('commentInput', { static: true }) commentInput!: ElementRef;
 
   onKeyUp(event: KeyboardEvent) {
-    const value = this.currentInput;
-    const previousValue = this.previousInput;
     const cursorPosition = this.commentInput.nativeElement.selectionStart;
-    
-    if (event.key === 'Backspace' && this.showUserList
-      && (previousValue.lastIndexOf('@') === previousValue.length - 1)) {
-      this.showUserList = false;
-    }
+    const value = this.currentInput;
 
-    if (event.key === 'Escape') {
-      this.showUserList = false
-      this.formEscaped.emit();
+    if (event.key === '@') {
+      // Explicitly check if another list is already shown
+      if (!this.showUserList) {
+        this.showUserList = true;
+        this.calculateDropdownPositionLeft(cursorPosition);
+      }
     } else if (event.key === 'Enter') {
-      this.addComment()
-    } else if (event.key === '@') {
-      this.showUserList = true
-      this.dropdownPositionLeft = this.calculateDropdownPositionLeft(cursorPosition)
+      this.addComment();
+    } else if (event.key === 'Escape') {
+      this.formEscaped.emit();
     } else if (this.showUserList) {
-      const indexOfAtSign = value.lastIndexOf('@', cursorPosition)
+      // Find the position of the last '@' before the cursor
+      const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
       if (indexOfAtSign !== -1) {
+        // Filter users based on the search term
         const searchTerm = value
           .substring(indexOfAtSign + 1, cursorPosition)
-          .toLowerCase()
+          .toLowerCase();
         this.filteredUsers = this.users.filter((user) =>
           user.name.toLowerCase().includes(searchTerm)
-        )
+        );
+      } else {
+        this.showUserList = false;
       }
     }
 
     this.previousInput = value;
   }
 
+  updateFilteredUsers(
+    value: string,
+    indexOfAtSign: number,
+    cursorPosition: number
+  ) {}
+
   calculateDropdownPositionLeft(cursorPosition: number): number {
-    const commentInputRect = this.commentInput.nativeElement.getBoundingClientRect();
-    const commmentInputSelectionStart = this.commentInput.nativeElement.selectionStart;
+    const commentInputRect =
+      this.commentInput.nativeElement.getBoundingClientRect();
+    const commmentInputSelectionStart =
+      this.commentInput.nativeElement.selectionStart;
 
     const commentInputWidth = commentInputRect.width;
     // debugger
-    
-    const dropdownPositionLeft = commentInputRect.left + (commmentInputSelectionStart) * 8.318 + 2;
-    
+
+    const dropdownPositionLeft =
+      commentInputRect.left + commmentInputSelectionStart * 7 + 5;
+
     return dropdownPositionLeft;
   }
 
-  selectUser(user: User) {
+  selectUser(user: User): void {
     alert(user.name);
-    this.currentInput += `${user.name} `;
-    this.previousInput = this.currentInput;
-    this.showUserList = false;
+    const inputElement = this.commentInput.nativeElement;
+    const cursorPosition = inputElement.selectionStart;
+    const value = this.currentInput;
+
+    // Find the position of the last '@' before the cursor
+    const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
+
+    if (indexOfAtSign !== -1) {
+      // Replace from '@' to the current cursor position with '@username '
+      this.currentInput = `${value.slice(0, indexOfAtSign)}@${
+        user.name
+      }${value.slice(cursorPosition)}`;
+
+      // Update view model
+      this.filteredUsers = this.users;
+      this.previousInput = this.currentInput;
+      this.showUserList = false;
+
+      // Focus the input
+      inputElement.focus();
+
+      // Calculate the new cursor position
+      const newCursorPosition = indexOfAtSign + user.name.length + 1; // +2 accounts for '@'
+      setTimeout(() => {
+        inputElement.setSelectionRange(newCursorPosition, newCursorPosition);
+      }, 0);
+    }
   }
 
   addComment() {
