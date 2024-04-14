@@ -7,14 +7,14 @@ import {
 } from '@angular/core';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { User } from '../interfaces/user.interface';
-import { UsersService } from '../services/users.service';
-import { dropdownAnimation, fadeInAnimation, slideInOutAnimation } from '../animations';
+import { User } from '../../models/user.interface';
+import { UsersService } from '../../services/users.service';
+import { dropdownAnimation, fadeInAnimation, slideInOutAnimation } from '../../animations';
 
 @Component({
   selector: 'comment-form',
   templateUrl: './comment-form.component.html',
-  styleUrls: ['./comment-form.component.css'],
+  styleUrl: './comment-form.component.css',
   animations: [dropdownAnimation, slideInOutAnimation, fadeInAnimation] 
 })
 export class CommentFormComponent {
@@ -23,7 +23,6 @@ export class CommentFormComponent {
   currentInput = '';
   showUserList = false;
   lastCursorIndex = 0;
-
   faPlusCircle = faPlusCircle;
 
   constructor(private usersService: UsersService) {}
@@ -39,8 +38,8 @@ export class CommentFormComponent {
   @ViewChild('commentInput', { static: true }) commentInput!: ElementRef;
 
   onKeyUp(event: KeyboardEvent) {
-    const cursorPosition = this.commentInput.nativeElement.selectionStart;
     const value = this.currentInput;
+    const cursorPosition = this.commentInput.nativeElement.selectionStart;
 
     if (event.key === '@') {
       // Explicitly check if another list is already shown
@@ -48,11 +47,9 @@ export class CommentFormComponent {
         this.filteredUsers = this.allUsers;
         this.showUserList = true;
       }
-    } else if (event.key === 'Enter') {
-      this.addComment();
-    } else if (event.key === 'Escape') {
-      this.formEscaped.emit();
-    } else if (this.showUserList) {
+    } else if (event.key === 'Enter') this.addComment();
+      else if (event.key === 'Escape') this.formEscaped.emit();
+    else if (this.showUserList) {
       // Find the position of the last '@' before the cursor
       const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
       if (indexOfAtSign !== -1) {
@@ -64,6 +61,7 @@ export class CommentFormComponent {
           user.name.toLowerCase().includes(searchTerm)
         );
       } else {
+        // Hide the user list if the '@' sign is removed
         this.showUserList = false;
       }
     }
@@ -90,7 +88,7 @@ export class CommentFormComponent {
       inputElement.focus();
 
       // Calculate the new cursor position
-      const newCursorPosition = indexOfAtSign + user.name.length + 1; // +2 accounts for '@'
+      const newCursorPosition = indexOfAtSign + user.name.length + 1; // +1 for the '@' sign
       setTimeout(() => {
         inputElement.setSelectionRange(newCursorPosition, newCursorPosition);
       }, 0);

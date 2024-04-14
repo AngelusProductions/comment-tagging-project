@@ -2,18 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { faCameraAlt } from '@fortawesome/free-solid-svg-icons';
 import { faComment, faTimesRectangle } from '@fortawesome/free-regular-svg-icons';
 
-import { CommentsService } from '../services/comments.service';
-import { Comment } from '../interfaces/comment.interface';
+import { CommentsService } from '../../services/comments.service';
+import { Comment } from '../../models/comment.interface';
 
 @Component({
   selector: 'comment-list',
   templateUrl: './comment-list.component.html',
-  styleUrls: ['./comment-list.component.css']
+  styleUrl: './comment-list.component.css'
 })
 export class CommentListComponent implements OnInit {
   showCommentForm = false;
   comments: Comment[] = [];
-
   faComment = faComment;
   faCamera = faCameraAlt;
   faTimes = faTimesRectangle;

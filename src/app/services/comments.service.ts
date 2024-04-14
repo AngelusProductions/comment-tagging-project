@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import commentsList from '../data/comments';
-import { Comment } from '../interfaces/comment.interface';
+import { Comment } from '../models/comment.interface';
 
 @Injectable({
   providedIn: 'root'

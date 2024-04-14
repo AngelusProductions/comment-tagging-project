@@ -4,7 +4,7 @@
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
-    border-bottom: solid #f3f3f3;
+    border-bottom: solid lightgray;
 }
 
 .comment-icon {

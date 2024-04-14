@@ -6,9 +6,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CommentListComponent } from './comment-list/comment-list.component';
-import { CommentItemComponent } from './comment-item/comment-item.component';
-import { CommentFormComponent } from './comment-form/comment-form.component';
+import { CommentListComponent } from './components/comment-list/comment-list.component';
+import { CommentItemComponent } from './components/comment-item/comment-item.component';
+import { CommentFormComponent } from './components/comment-form/comment-form.component';
 
 @NgModule({
   declarations: [

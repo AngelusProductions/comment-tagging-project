@@ -1,16 +1,13 @@
 <div id="comment-list-container">
     <h1>Comments: </h1>
-
     <ul id="comment-list">
         <comment-item *ngFor="let comment of comments" [comment]="comment"></comment-item>
     </ul>
-
     <comment-form 
         *ngIf="showCommentForm" 
         (commentAdded)="onCommentAdded($event)"
         (formEscaped)="this.showCommentForm = false"
     />
-    
     <button (click)="showCommentForm = !showCommentForm">
         <div *ngIf="!showCommentForm">
             <fa-icon [icon]="faComment"></fa-icon>

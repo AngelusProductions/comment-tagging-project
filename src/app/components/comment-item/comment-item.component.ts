@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { faComment } from '@fortawesome/free-regular-svg-icons';
 
-import { Comment } from '../interfaces/comment.interface';
+import { Comment } from '../../models/comment.interface';
 
 @Component({
   selector: 'comment-item',
