@@ -38,10 +38,69 @@ export class CommentFormComponent {
 
   @ViewChild('commentInput', { static: true }) commentInput!: ElementRef;
 
-  onKeyUp(event: KeyboardEvent) {
-    const cursorPosition = this.commentInput.nativeElement.selectionStart;
-    const value = this.currentInput;
+  setCommentInput(value: string) {
+    this.commentInput.nativeElement.innerHTML = value;
+  }
 
+getCaretPosition(): number {
+  const editableDiv = this.commentInput.nativeElement;
+  let caretPos = 0;
+  const sel = window.getSelection();
+  debugger
+  // Check if there is a selection (there should be if the div is focused)
+  if (sel && sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    const preCaretRange = range.cloneRange(); // Clone the range
+
+    // Set the start position to the very beginning of the contenteditable element
+    preCaretRange.selectNodeContents(editableDiv);
+    preCaretRange.setEnd(range.endContainer, range.endOffset); // Set the end position to the end of the selection
+    caretPos = preCaretRange.toString().length; // The length of the string from the start to the range end is the cursor position
+  }
+
+  console.log('Caret position:', caretPos);
+  return caretPos;
+}
+
+setCaretPosition(pos: number): void {
+    const node = this.commentInput.nativeElement;
+    if (!node.childNodes.length) {
+      return; // If the div is empty, there's no text node to place the cursor in
+    }
+
+    const range = document.createRange(); // Create a range
+    const sel = window.getSelection(); // Get the selection object
+    let currentNode = null;
+    let previousNode = null;
+
+    // Traverse text nodes to find the correct position
+    node.childNodes.forEach((childNode: any) => {
+      if (childNode.nodeType === 3) { // Text node
+        if (pos > childNode.length) {
+          pos -= childNode.length;
+          previousNode = childNode;
+        } else {
+          currentNode = childNode;
+          return;
+        }
+      }
+    });
+
+    currentNode = currentNode || previousNode; // In case position is beyond last node
+    range.setStart(currentNode ?? new Node(), pos); // Set the start of the range to the calculated position
+    range.collapse(true); // Collapse the range to the start, effectively moving the cursor there
+
+    if (sel) {
+      sel.removeAllRanges(); // Remove any existing selections
+      sel.addRange(range); // Add the new range
+    }
+  }
+
+
+  onKeyUp(event: KeyboardEvent) {
+    const cursorPosition = this.getCaretPosition();
+    const value = this.commentInput.nativeElement.innerHTML;
+    
     if (event.key === '@') {
       // Explicitly check if another list is already shown
       if (!this.showUserList) {
@@ -71,16 +130,16 @@ export class CommentFormComponent {
 
   selectUser(user: User): void {
     alert(user.name);
-    const value = this.currentInput;
+    const value = this.commentInput.nativeElement.innerHTML;
     const inputElement = this.commentInput.nativeElement;
-    const cursorPosition = inputElement.selectionStart;
-
+    const cursorPosition = this.getCaretPosition();
+    
     // Find the position of the last '@' before the cursor
     const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
 
     if (indexOfAtSign !== -1) {
       // Replace from '@' to the current cursor position with '@username '
-      this.currentInput = `${value.slice(0, indexOfAtSign)}@${user.name}${value.slice(cursorPosition)}`;
+      this.setCommentInput(`${value.slice(0, indexOfAtSign)}<b>@${user.name}</b>${value.slice(cursorPosition)}`);
 
       // Update view model
       this.filteredUsers = this.allUsers;
@@ -90,9 +149,11 @@ export class CommentFormComponent {
       inputElement.focus();
 
       // Calculate the new cursor position
-      const newCursorPosition = indexOfAtSign + user.name.length + 1; // +2 accounts for '@'
+      const newCursorPosition = indexOfAtSign + user.name.length + 2; // +2 accounts for '@'
       setTimeout(() => {
-        inputElement.setSelectionRange(newCursorPosition, newCursorPosition);
+        const test = indexOfAtSign
+        debugger
+        this.setCaretPosition(newCursorPosition);
       }, 0);
     }
   }

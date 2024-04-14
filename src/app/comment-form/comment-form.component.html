@@ -1,5 +1,5 @@
 <div id="comment-form">
-  <input
+  <!-- <input
     #commentInput
     type="text"
     id="comment-input"
@@ -7,7 +7,14 @@
     [(ngModel)]="currentInput"
     placeholder="Add a comment..."
     [@slideInOut]
-  />
+  /> -->
+  <div
+    #commentInput
+    id="comment-input"
+    contenteditable="true"
+    (keyup)="onKeyUp($event)"
+    [innerHTML]="currentInput"
+  ></div>
   <ul [@dropdownAnimation]="showUserList ? 'open' : 'closed'" id="user-list-dropdown">
     <li *ngFor="let user of filteredUsers" (click)="selectUser(user)">
       {{ user.name }}
