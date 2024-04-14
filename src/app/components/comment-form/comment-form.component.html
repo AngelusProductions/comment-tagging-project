@@ -1,19 +1,12 @@
 <div id="comment-form">
-  <input
-    #commentInput
-    type="text"
-    id="comment-input"
-    (keyup)="onKeyUp($event)"
-    [(ngModel)]="currentInput"
-    placeholder="Add a comment..."
-    [@slideInOut]
-  />
-  <ul [@dropdownAnimation]="showUserList ? 'open' : 'closed'" id="user-list-dropdown">
-    <li *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+  <input #commentInput type="text" id="comment-input" [(ngModel)]="currentInput"
+    placeholder="Add a comment..." (keydown)="handleInputKeyDown($event)" />
+  <ul *ngIf="showUserList" id="user-list-dropdown" #userList (keydown)="handleListKeyDown($event)">
+    <li *ngFor="let user of filteredUsers; let i = index" (click)="selectUser(user)" tabindex="0">
       {{ user.name }}
     </li>
   </ul>
-  <button id="add-comment-button" (click)="addComment()" [@fadeIn]>
+  <button id="add-comment-button" (click)="addComment()">
     <fa-icon [icon]="faPlusCircle"></fa-icon>
     Add
   </button>

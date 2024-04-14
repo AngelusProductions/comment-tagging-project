@@ -4,26 +4,38 @@ import {
   ViewChild,
   EventEmitter,
   Output,
+  HostListener,
 } from '@angular/core';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-
 import { User } from '../../models/user.interface';
 import { UsersService } from '../../services/users.service';
-import { dropdownAnimation, fadeInAnimation, slideInOutAnimation } from '../../animations';
+import {
+  dropdownAnimation,
+  fadeInAnimation,
+  slideInOutAnimation,
+} from '../../animations';
 
 @Component({
   selector: 'comment-form',
   templateUrl: './comment-form.component.html',
-  styleUrl: './comment-form.component.css',
-  animations: [dropdownAnimation, slideInOutAnimation, fadeInAnimation] 
+  styleUrls: ['./comment-form.component.css'],
+  animations: [dropdownAnimation, fadeInAnimation, slideInOutAnimation],
 })
 export class CommentFormComponent {
   allUsers: User[] = [];
   filteredUsers: User[] = [];
   currentInput = '';
   showUserList = false;
-  lastCursorIndex = 0;
+  activeUserIndex = 0; // Active user index for keyboard navigation
   faPlusCircle = faPlusCircle;
+
+  @Output() formEscaped = new EventEmitter();
+  @Output() commentAdded = new EventEmitter<string>();
+
+  @ViewChild('commentInput', { static: true })
+  commentInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('userList', { static: false })
+  userList!: ElementRef<HTMLUListElement>;
 
   constructor(private usersService: UsersService) {}
 
@@ -32,74 +44,89 @@ export class CommentFormComponent {
     this.filteredUsers = this.allUsers;
   }
 
-  @Output() formEscaped = new EventEmitter();
-  @Output() commentAdded = new EventEmitter<string>();
+  handleInputKeyDown(event: KeyboardEvent): void {
+    if (event.key === '@' && !this.showUserList) {
+      this.filteredUsers = this.allUsers;
+      this.showUserList = true;
+      this.activeUserIndex = 0;
+      setTimeout(() => this.focusActiveUser(), 10);
+    }
+  }
 
-  @ViewChild('commentInput', { static: true }) commentInput!: ElementRef;
+  handleListKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.navigateUsers(event.key);
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      this.selectUser(this.filteredUsers[this.activeUserIndex]);
+    }
+  }
 
-  onKeyUp(event: KeyboardEvent) {
-    const value = this.currentInput;
-    const cursorPosition = this.commentInput.nativeElement.selectionStart;
+  focusActiveUser(): void {
+    const items = this.userList.nativeElement.querySelectorAll('li');
+    if (items.length > 0 && items[this.activeUserIndex]) {
+      items[this.activeUserIndex].focus();
+    }
+  }
 
-    if (event.key === '@') {
-      // Explicitly check if another list is already shown
-      if (!this.showUserList) {
-        this.filteredUsers = this.allUsers;
-        this.showUserList = true;
-      }
-    } else if (event.key === 'Enter') this.addComment();
-      else if (event.key === 'Escape') this.formEscaped.emit();
-    else if (this.showUserList) {
-      // Find the position of the last '@' before the cursor
-      const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
-      if (indexOfAtSign !== -1) {
-        // Filter users based on the search term
-        const searchTerm = value
-          .substring(indexOfAtSign + 1, cursorPosition)
-          .toLowerCase();
-        this.filteredUsers = this.allUsers.filter((user) =>
-          user.name.toLowerCase().includes(searchTerm)
-        );
-      } else {
-        // Hide the user list if the '@' sign is removed
-        this.showUserList = false;
-      }
+  navigateUsers(key: string): void {
+    if (key === 'ArrowDown') {
+      this.activeUserIndex = Math.min(
+        this.activeUserIndex + 1,
+        this.filteredUsers.length - 1
+      );
+    } else if (key === 'ArrowUp') {
+      this.activeUserIndex = Math.max(this.activeUserIndex - 1, 0);
+    }
+    this.focusActiveUser();
+  }
+
+  updateFilteredUsers(cursorPosition: number): void {
+    const indexOfAtSign = this.currentInput.lastIndexOf('@', cursorPosition - 1);
+    if (indexOfAtSign !== -1) {
+      const searchTerm = this.currentInput
+        .substring(indexOfAtSign + 1, cursorPosition)
+        .toLowerCase();
+      this.filteredUsers = this.allUsers.filter((user) =>
+        user.name.toLowerCase().includes(searchTerm)
+      );
+      this.showUserList = true;
+    } else {
+      this.showUserList = false;
     }
   }
 
   selectUser(user: User): void {
-    alert(user.name);
     const value = this.currentInput;
     const inputElement = this.commentInput.nativeElement;
-    const cursorPosition = inputElement.selectionStart;
-
-    // Find the position of the last '@' before the cursor
+    const cursorPosition = this.commentInput.nativeElement.selectionStart;
+    if (cursorPosition === null) {
+      console.error('cursorPosition is null');
+      return;
+    }
     const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
 
-    if (indexOfAtSign !== -1) {
-      // Replace from '@' to the current cursor position with '@username '
-      this.currentInput = `${value.slice(0, indexOfAtSign)}@${user.name}${value.slice(cursorPosition)}`;
-
-      // Update view model
+    if (indexOfAtSign !== -1 && cursorPosition !== null) {
+      this.currentInput = `${value.slice(0, indexOfAtSign)}@${
+        user.name
+      } ${value.slice(cursorPosition)}`;
       this.filteredUsers = this.allUsers;
       this.showUserList = false;
-
-      // Focus the input
       inputElement.focus();
-
-      // Calculate the new cursor position
-      const newCursorPosition = indexOfAtSign + user.name.length + 1; // +1 for the '@' sign
-      setTimeout(() => {
-        inputElement.setSelectionRange(newCursorPosition, newCursorPosition);
-      }, 0);
+      const newCursorPosition = indexOfAtSign + user.name.length + 2; // +2 for '@' and space
+      setTimeout(
+        () =>
+          inputElement.setSelectionRange(newCursorPosition, newCursorPosition),
+        0
+      );
     }
   }
 
-  addComment() {
-    // Don't add empty comments
+  addComment(): void {
     if (!this.currentInput.trim()) return;
-
-    // Emit the comment to the parent component
     this.commentAdded.emit(this.currentInput);
+    this.currentInput = '';
+    this.commentInput.nativeElement.blur();
   }
 }
