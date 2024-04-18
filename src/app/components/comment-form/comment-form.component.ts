@@ -22,7 +22,6 @@ export class CommentFormComponent {
   filteredUsers: User[] = [];
   currentInput = '';
   showUserList = false;
-  lastCursorIndex = 0;
   faPlusCircle = faPlusCircle;
 
   constructor(private usersService: UsersService) {}
@@ -35,6 +34,7 @@ export class CommentFormComponent {
   @Output() formEscaped = new EventEmitter();
   @Output() commentAdded = new EventEmitter<string>();
 
+  // Our template reference variable is used to access the input element
   @ViewChild('commentInput', { static: true }) commentInput!: ElementRef;
 
   onKeyUp(event: KeyboardEvent) {
@@ -77,7 +77,7 @@ export class CommentFormComponent {
     const indexOfAtSign = value.lastIndexOf('@', cursorPosition - 1);
 
     if (indexOfAtSign !== -1) {
-      // Replace from '@' to the current cursor position with '@username '
+      // Replace from '@' to the current cursor position with '@username'
       this.currentInput = `${value.slice(0, indexOfAtSign)}@${user.name}${value.slice(cursorPosition)}`;
 
       // Update view model
